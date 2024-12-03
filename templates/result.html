@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Encryption Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Encryption Result</h1>
-    <p><strong>Original Text:</strong> {{ text }}</p>
-    <p><strong>Encrypted Text:</strong> {{ result }}</p>
-    <a href="/">Encrypt Another</a>
+    <div class="container">
+        <h1>Encryption Result</h1>
+        <h3>Input Text:</h3>
+        <p>{{ input_text }}</p>
+        <h3>Encrypted Text:</h3>
+        <p>{{ output_text }}</p>
+
+        <a href="/">Back to Home</a>
+    </div>
 </body>
 </html>
