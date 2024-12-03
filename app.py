@@ -2,136 +2,98 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-# Helper function for the Mono-Alphabetic Substitution Cipher
-def monoalphabetic_substitution(text, key):
-    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    key = key.upper()
-    table = dict(zip(alphabet, key))  # Create a substitution table from the key
-    encrypted_text = ''.join([table.get(char, char) for char in text.upper()])
-    return encrypted_text
+# -------------------- MONOALPHABETIC CIPHER --------------------
+def monoalphabetic_encrypt(text, key):
+    encrypted = ''.join(key[ord(c) - ord('A')] if c.isalpha() else c for c in text.upper())
+    return encrypted
 
-# Helper function for the Vigenère Cipher (Polyalphabetic Substitution)
-def vigenere_cipher(text, key):
-    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    key = key.upper()
-    encrypted_text = []
-    key_len = len(key)
-    for i, char in enumerate(text.upper()):
-        if char in alphabet:
-            shift = alphabet.index(key[i % key_len])
-            encrypted_char = alphabet[(alphabet.index(char) + shift) % 26]
-            encrypted_text.append(encrypted_char)
-        else:
-            encrypted_text.append(char)  # Keep non-alphabetic characters unchanged
-    return ''.join(encrypted_text)
+def monoalphabetic_decrypt(text, key):
+    inverse_key = {v: k for k, v in enumerate(key)}
+    decrypted = ''.join(chr(inverse_key[c] + ord('A')) if c.isalpha() else c for c in text.upper())
+    return decrypted
 
-# Helper function for the Playfair Cipher
-def playfair_substitution(text, key):
-    # Create a 5x5 Playfair matrix
-    alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
-    key = ''.join(sorted(set(key.upper()), key=lambda x: key.index(x)))  # Removing duplicates from key
-    key_matrix = key + alphabet
-    key_matrix = ''.join(sorted(set(key_matrix), key=lambda x: key_matrix.index(x)))  # Final matrix string
-    
-    # Create a dictionary for the matrix
-    matrix = {key_matrix[i]: (i // 5, i % 5) for i in range(len(key_matrix))}
-    
-    # Prepare the text for Playfair cipher (change J to I)
-    text = text.upper().replace('J', 'I')
+# -------------------- VIGENÈRE CIPHER --------------------
+def vigenere_encrypt(text, key):
+    text, key = text.upper(), key.upper()
+    encrypted = ''.join(chr((ord(t) + ord(k) - 2 * ord('A')) % 26 + ord('A'))
+                        if t.isalpha() else t
+                        for t, k in zip(text, (key * (len(text) // len(key) + 1))[:len(text)]))
+    return encrypted
+
+def vigenere_decrypt(text, key):
+    text, key = text.upper(), key.upper()
+    decrypted = ''.join(chr((ord(t) - ord(k) + 26) % 26 + ord('A'))
+                        if t.isalpha() else t
+                        for t, k in zip(text, (key * (len(text) // len(key) + 1))[:len(text)]))
+    return decrypted
+
+# -------------------- PLAYFAIR CIPHER --------------------
+def preprocess_text(text):
+    text = ''.join(filter(str.isalpha, text)).upper()
     if len(text) % 2 != 0:
-        text += 'X'  # Add padding X if length is odd
+        text += 'X'  # Padding
+    return text
 
-    encrypted_text = []
-    for i in range(0, len(text), 2):
-        first_char = text[i]
-        second_char = text[i+1]
+def create_key_table(key):
+    key = ''.join(sorted(set(key.upper()), key=key.index)) + 'ABCDEFGHIKLMNOPQRSTUVWXYZ'
+    key = ''.join(sorted(set(key), key=key.index))
+    return [key[i:i+5] for i in range(0, 25, 5)]
 
-        row1, col1 = matrix[first_char]
-        row2, col2 = matrix[second_char]
+def find_position(char, key_table):
+    for i, row in enumerate(key_table):
+        for j, c in enumerate(row):
+            if char == c:
+                return i, j
+    return None
 
-        if row1 == row2:
-            encrypted_text.append(key_matrix[row1*5 + (col1+1) % 5])
-            encrypted_text.append(key_matrix[row2*5 + (col2+1) % 5])
-        elif col1 == col2:
-            encrypted_text.append(key_matrix[((row1+1) % 5)*5 + col1])
-            encrypted_text.append(key_matrix[((row2+1) % 5)*5 + col2])
-        else:
-            encrypted_text.append(key_matrix[row1*5 + col2])
-            encrypted_text.append(key_matrix[row2*5 + col1])
+def playfair_encrypt(text, key):
+    text = preprocess_text(text)
+    key_table = create_key_table(key)
+    pairs = [text[i:i+2] for i in range(0, len(text), 2)]
+    encrypted = ""
+    for pair in pairs:
+        row1, col1 = find_position(pair[0], key_table)
+        row2, col2 = find_position(pair[1], key_table)
+        if row1 == row2:  # Same row
+            encrypted += key_table[row1][(col1 + 1) % 5]
+            encrypted += key_table[row2][(col2 + 1) % 5]
+        elif col1 == col2:  # Same column
+            encrypted += key_table[(row1 + 1) % 5][col1]
+            encrypted += key_table[(row2 + 1) % 5][col2]
+        else:  # Rectangle rule
+            encrypted += key_table[row1][col2]
+            encrypted += key_table[row2][col1]
+    return encrypted
 
-    return ''.join(encrypted_text)
+# -------------------- TRANSPOSITION CIPHER --------------------
+def transpose_encrypt(text, method):
+    text = text.replace(" ", "").upper()
+    if method == "single_columnar":
+        return ''.join(sorted(text))  # Single columnar transposition
+    elif method == "double_columnar":
+        return ''.join([text[i::2] for i in range(2)])  # Double columnar transposition
+    return text
 
-# Helper function for the Hill Cipher
-def hill_cipher(text, key):
-    # 2x2 Hill cipher for simplicity
-    key_matrix = [[int(key[0]), int(key[1])], [int(key[2]), int(key[3])]]
-    text = text.upper().replace(' ', '')
-    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    encrypted_text = []
-
-    for i in range(0, len(text), 2):
-        chunk = text[i:i + 2]
-        if len(chunk) < 2:
-            chunk += 'X'  # Add padding X if chunk is incomplete
-        chunk_vector = [alphabet.index(chunk[0]), alphabet.index(chunk[1])]
-        encrypted_chunk = [
-            (key_matrix[0][0] * chunk_vector[0] + key_matrix[0][1] * chunk_vector[1]) % 26,
-            (key_matrix[1][0] * chunk_vector[0] + key_matrix[1][1] * chunk_vector[1]) % 26
-        ]
-        encrypted_text.append(alphabet[encrypted_chunk[0]] + alphabet[encrypted_chunk[1]])
-    
-    return ''.join(encrypted_text)
-
-# Transposition Cipher - Single Columnar
-def single_columnar_transposition(text, key):
-    # Create a table with columns based on the key
-    num_cols = len(key)
-    num_rows = len(text) // num_cols
-    remainder = len(text) % num_cols
-    padded_text = text + 'X' * (num_cols - remainder) if remainder != 0 else text
-    grid = [padded_text[i:i + num_cols] for i in range(0, len(padded_text), num_cols)]
-
-    # Rearrange columns based on the key
-    key_order = sorted(list(range(num_cols)), key=lambda k: key[k])
-    transposed_text = ''.join([''.join([grid[row][key_order[col]] for row in range(num_rows)]) for col in range(num_cols)])
-
-    return transposed_text
-
-# Transposition Cipher - Double Columnar
-def double_columnar_transposition(text, key1, key2):
-    # First columnar transposition using key1
-    step1 = single_columnar_transposition(text, key1)
-    # Then second columnar transposition using key2
-    return single_columnar_transposition(step1, key2)
-
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        text = request.form['text']
+        cipher_type = request.form['cipher_type']
+        key = request.form['key']
+        transposition_type = request.form.get('transposition_type')
+
+        if cipher_type == "monoalphabetic":
+            mono_key = "QWERTYUIOPASDFGHJKLZXCVBNM"
+            encrypted_text = monoalphabetic_encrypt(text, mono_key)
+        elif cipher_type == "vigenere":
+            encrypted_text = vigenere_encrypt(text, key)
+        elif cipher_type == "playfair":
+            encrypted_text = playfair_encrypt(text, key)
+        elif cipher_type == "transposition":
+            encrypted_text = transpose_encrypt(text, transposition_type)
+        
+        return render_template('result.html', encrypted_text=encrypted_text)
     return render_template('index.html')
 
-@app.route('/result', methods=['POST'])
-def result():
-    cipher_type = request.form['cipher_type']
-    cipher_option = request.form['cipher_option']
-    input_text = request.form['input_text']
-    key = request.form['key']
-    
-    if cipher_type == 'substitution':
-        if cipher_option == 'monoalphabetic':
-            output_text = monoalphabetic_substitution(input_text, key)
-        elif cipher_option == 'vigenere':
-            output_text = vigenere_cipher(input_text, key)
-        elif cipher_option == 'playfair':
-            output_text = playfair_substitution(input_text, key)
-        elif cipher_option == 'hill':
-            output_text = hill_cipher(input_text, key)
-    elif cipher_type == 'transposition':
-        if cipher_option == 'single_columnar':
-            output_text = single_columnar_transposition(input_text, key)
-        elif cipher_option == 'double_columnar':
-            key2 = request.form['key2']  # Additional key for double columnar transposition
-            output_text = double_columnar_transposition(input_text, key, key2)
-
-    return render_template('result.html', input_text=input_text, output_text=output_text, cipher_type=cipher_type, cipher_option=cipher_option)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)

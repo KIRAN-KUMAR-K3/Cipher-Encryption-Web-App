@@ -3,53 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cipher Encryption Web App</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Cipher Encryptor</title>
+    <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Cipher Encryption Web App</h1>
-        <form action="/result" method="post">
-            <label for="cipher_type">Select Cipher Type:</label>
-            <select name="cipher_type" id="cipher_type">
-                <option value="substitution">Substitution</option>
-                <option value="transposition">Transposition</option>
-            </select>
-
-            <label for="cipher_option">Select Cipher Option:</label>
-            <select name="cipher_option" id="cipher_option">
-                <option value="monoalphabetic">Monoalphabetic Cipher</option>
-                <option value="vigenere">Vigenère Cipher</option>
-                <option value="playfair">Playfair Cipher</option>
-                <option value="hill">Hill Cipher</option>
-                <option value="single_columnar">Single Columnar Transposition</option>
-                <option value="double_columnar">Double Columnar Transposition</option>
-            </select>
-
-            <label for="input_text">Enter Text:</label>
-            <textarea name="input_text" id="input_text" required></textarea>
-
-            <label for="key">Enter Key:</label>
-            <input type="text" name="key" id="key" required>
-
-            <div id="key2_field" style="display:none;">
-                <label for="key2">Enter Second Key (for Double Columnar):</label>
-                <input type="text" name="key2" id="key2">
+        <h1>Text Encryption using Ciphers</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="text">Enter Text to Encrypt:</label>
+                <input type="text" id="text" name="text" required>
             </div>
-
+            <div class="form-group">
+                <label for="cipher_type">Choose Cipher Type:</label>
+                <select id="cipher_type" name="cipher_type">
+                    <option value="monoalphabetic">Monoalphabetic</option>
+                    <option value="vigenere">Vigenère</option>
+                    <option value="playfair">Playfair</option>
+                    <option value="transposition">Transposition</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="key">Enter Key:</label>
+                <input type="text" id="key" name="key" required>
+            </div>
+            <div class="form-group">
+                <label for="transposition_type">Choose Transposition Type (for Transposition cipher):</label>
+                <select id="transposition_type" name="transposition_type">
+                    <option value="single_columnar">Single Columnar</option>
+                    <option value="double_columnar">Double Columnar</option>
+                </select>
+            </div>
             <button type="submit">Encrypt</button>
         </form>
     </div>
-
-    <script>
-        document.getElementById('cipher_option').addEventListener('change', function () {
-            var key2Field = document.getElementById('key2_field');
-            if (this.value === 'double_columnar') {
-                key2Field.style.display = 'block';
-            } else {
-                key2Field.style.display = 'none';
-            }
-        });
-    </script>
 </body>
 </html>
