@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cipher Encryption</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Cipher Encryption</h1>
+        <form action="/encrypt" method="POST">
+            <div class="form-group">
+                <label for="cipherType">Select Cipher Type:</label>
+                <select id="cipherType" name="cipherType" required>
+                    <option value="monoalphabetic">Monoalphabetic Cipher</option>
+                    <option value="vigenere">Vigenère Cipher</option>
+                    <option value="playfair">Playfair Cipher</option>
+                    <option value="hill">Hill Cipher</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="text">Enter Text:</label>
+                <input type="text" id="text" name="text" placeholder="Enter text to encrypt" required>
+            </div>
+            <div class="form-group">
+                <label for="key">Enter Key:</label>
+                <input type="text" id="key" name="key" placeholder="Enter key (if applicable)" required>
+            </div>
+            <div class="form-group">
+                <label for="hillKey">Hill Cipher Key (3x3 Matrix):</label>
+                <input type="text" id="hillKey" name="hillKey" placeholder="Enter 9 integers separated by spaces">
+            </div>
+            <button type="submit">Encrypt</button>
+        </form>
+    </div>
+</body>
+</html>
+
