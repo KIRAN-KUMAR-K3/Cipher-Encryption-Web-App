@@ -1,93 +1,101 @@
 
-# Cipher Encryption Web App
+# Cipher Encryptor Web Application
 
-This is a web application built using Flask that allows users to encrypt text using various substitution and transposition ciphers. The application provides a user-friendly interface to choose between different cipher types, input plaintext, and get the corresponding encrypted output.
+A simple web application built with Flask that allows users to encrypt text using various encryption algorithms. The app supports the following ciphers:
+
+- **Monoalphabetic Cipher**
+- **Vigenère Cipher**
+- **Playfair Cipher**
+- **Transposition Cipher** (Single Columnar and Double Columnar)
 
 ## Features
 
-### Substitution Ciphers:
-- **Monoalphabetic Cipher**
-- **Polyalphabetic Cipher (Vigenère Cipher)**
-- **Playfair Cipher**
-- **Hill Cipher**
+- Users can input plain text and choose an encryption method.
+- The app encrypts the text based on the selected cipher method and displays the encrypted text.
+- Supports multiple cipher types with configurable keys.
+- Easy-to-use interface with a simple form for text input and key entry.
 
-### Transposition Ciphers:
-- **Single Columnar Transposition**
-- **Double Columnar Transposition**
+## Installation
 
-### Interactive Interface:
-- Users can choose between the different cipher types.
-- The application supports both substitution and transposition cipher types.
-- It provides an option to input the required cipher key for encryption.
-- Displays the encrypted text once the encryption process is complete.
-
-## Technologies Used
-- **Python 3.x**: Programming language.
-- **Flask**: Web framework to run the application.
-- **HTML/CSS**: For the front-end design of the app.
-- **JavaScript**: For dynamic UI behavior.
-
-## Requirements
-
-To run this project, you need the following installed:
+### Prerequisites
 
 - Python 3.x
 - Flask
 
-### Step 1: Clone the repository
+### Steps to run the application
 
-Clone this repository to your local machine:
+1. **Clone the repository** (or create a folder for your project):
+   ```bash
+   git clone https://github.com/yourusername/cipher-encryptor.git
+   cd cipher-encryptor
+   ```
 
-```bash
-git clone https://github.com/KIRAN-KUMAR-K3/Cipher-Encryption-Web-App.git
-cd Cipher-Encryption-Web-App
+2. **Install the required dependencies**:
+   Create a virtual environment (optional but recommended):
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
+
+   Then install Flask:
+   ```bash
+   pip install flask
+   ```
+
+3. **Run the application**:
+   ```bash
+   python app.py
+   ```
+
+   The application will run at `http://127.0.0.1:5000/` in your browser.
+
+## How It Works
+
+### Available Ciphers:
+
+1. **Monoalphabetic Cipher**:
+   - A cipher where each letter of the alphabet is mapped to a different letter.
+   - The user can enter any key for the cipher. The key will define how letters are mapped.
+
+2. **Vigenère Cipher**:
+   - A cipher that uses a key word to shift the letters of the plaintext.
+   - Users provide the key and the app shifts the text accordingly.
+
+3. **Playfair Cipher**:
+   - A cipher that encrypts pairs of letters using a 5x5 key table.
+   - Requires the user to input a keyword that will form the key table.
+
+4. **Transposition Cipher**:
+   - The text is rearranged in a specific manner, based on the columnar order.
+   - The user can choose between single or double columnar transposition.
+
+## Files Structure
+
+The project has the following structure:
+
+```
+cipher-encryptor/
+├── app.py              # Main Flask application
+├── templates/          # Folder for HTML templates
+│   ├── index.html      # Input form page
+│   └── result.html     # Page to display encrypted text
+└── static/             # Folder for static files like CSS
+    └── style.css       # Stylesheet for the app
 ```
 
-### Step 2: Install the required dependencies
+## Example Usage
 
-Install Flask and any other dependencies via pip:
-
-```bash
-pip install -r requirements.txt
-```
-
-### Step 3: Run the application
-
-To start the Flask application, run the following command:
-
-```bash
-python app.py
-```
-
-The app will be running at `http://127.0.0.1:5000/`.
-
-## How to Use
-
-1. **Choose a Cipher**: On the home page, select the cipher type (either Substitution or Transposition).
-2. **Enter Text**: Input the text you want to encrypt.
-3. **Select Cipher Parameters**: 
-   - For substitution ciphers (like Vigenère, Monoalphabetic), you may need to enter a key.
-   - For transposition ciphers, you may need to provide the key length or the number of columns.
-4. **Click "Encrypt"**: Once you input the required data, click on the Encrypt button.
-5. **View Result**: The encrypted text will be displayed on the results page.
-
-## Project Structure
-
-```
-├── app.py                # Main Flask application code
-├── requirements.txt      # List of required Python libraries
-├── static/
-│   └── style.css         # CSS for styling the app
-└── templates/
-    ├── index.html        # Home page for the app (user interface)
-    └── result.html       # Page to display the encrypted result
-```
+1. Open the app in your browser (`http://127.0.0.1:5000/`).
+2. Enter the text you wish to encrypt.
+3. Select the cipher type.
+4. Enter the required key for encryption.
+5. Press the "Encrypt" button.
+6. The encrypted text will be displayed on the result page.
 
 ## Contributing
 
-Contributions are welcome! If you find any issues or want to add new cipher techniques, feel free to open a pull request or create an issue.
+If you want to contribute to the project, feel free to fork the repository and create a pull request with improvements, bug fixes, or new features. You can also report issues using the GitHub Issues page.
 
 ## License
 
-This project is open-source and available under the MIT License. See the [LICENSE](LICENSE) file for more details.
-
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
