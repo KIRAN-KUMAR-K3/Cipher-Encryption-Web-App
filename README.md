@@ -1,4 +1,3 @@
-
 # Cipher Encryptor Web Application
 
 A simple web application built with Flask that allows users to encrypt text using various encryption algorithms. The app supports the following ciphers:
